@@ -14,6 +14,7 @@ class Line:
     __name__ = 'account.statement.line'
 
     def create_move(self):
+        print "Para la conciliacion"
         pool = Pool()
         Move = pool.get('account.move')
         Period = pool.get('account.period')
@@ -56,10 +57,12 @@ class Line:
                 if not move_payment:
                     continue
                 for line in move_payment.lines:
-                    if (not line.reconciliation and
-                            line.account.id == account.id):
-                        lines_advanced.append(line)
-                        amount2 += line.debit - line.credit
+                    description = "used"+self.description
+                    if line.party:
+                        if (not line.reconciliation and
+                                line.party.id == self.party.id and description == line.description):
+                            lines_advanced.append(line)
+                            amount2 += line.debit - line.credit
             for move_line in move.lines:
                 if move_line.account == self.invoice.account:
                     Invoice.write([self.invoice], {
@@ -84,4 +87,5 @@ class Line:
                 if reconcile_lines[1] == Decimal('0.0'):
                     lines = reconcile_lines[0] + [move_line]
                     MoveLine.reconcile(lines)
+
         return move
