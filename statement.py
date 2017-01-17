@@ -14,7 +14,6 @@ class Line:
     __name__ = 'account.statement.line'
 
     def create_move(self):
-        print "Para la conciliacion"
         pool = Pool()
         Move = pool.get('account.move')
         Period = pool.get('account.period')
